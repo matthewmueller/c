@@ -3,3 +3,4 @@ test
 examples
 *.sock
 client.js
+build
