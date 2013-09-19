@@ -1,0 +1,8 @@
+{
+  "name": "c.js",
+  "version": "0.0.1",
+  "description": "multi-environment configuration for server and client",
+  "dependencies": {
+    "extend.js": "*"
+  }
+}

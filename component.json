@@ -1,0 +1,7 @@
+{
+  "name": "c",
+  "version": "0.0.1",
+  "description": "multi-environment configuration for server and client",
+  "main": "client.js",
+  "scripts": [ "client.js" ]
+}
