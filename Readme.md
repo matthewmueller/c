@@ -34,6 +34,7 @@ dev.client({
 prod.server('s3', 'some key');
 prod.client('ga', 'some key');
 
+// write client-side configuration
 conf.write(__dirname + '/client.js');
 ```
 
