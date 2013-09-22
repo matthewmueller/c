@@ -40,7 +40,7 @@ conf.write(__dirname + '/client.js');
 
 In `production` index.js:
 
-```
+```js
   var conf = require('./config');
   conf.script // __dirname + '/scripts'
   conf.s3 // some key
@@ -49,7 +49,7 @@ In `production` index.js:
 
 In `production` client.js:
 
-```
+```js
   var conf = require('./config');
   conf.script // __dirname + '/scripts'
   conf.s3 // undefined (server-side key)
