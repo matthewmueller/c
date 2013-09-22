@@ -132,8 +132,6 @@ This mutate function is used internally by all environment and root configuratio
   mutate('a');
 ```
 
-Mutate is
-
 ## Tests
 
 ```
