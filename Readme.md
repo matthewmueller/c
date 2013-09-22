@@ -1,7 +1,7 @@
 
 # c.js
 
-  multi-environment configuration for client and server
+  multi-environment configuration for server and client (with component, bower, etc.). Automatically defines getters for configuration.
 
 ## Installation
 
@@ -9,22 +9,17 @@ Using npm:
 
     npm install c.js
 
-Using component:
-
-    component install matthewmueller/c
-
 ## Example
 
-```js
-var conf = require('c.js')();
-var all = conf.all();
-var dev = conf.env('development');
-var prod = conf.env('production');
-var private = conf.import(require('./private'));
+In `config/index.js`:
 
-all({
-  script: __dirname + '/scripts'
-})
+```js
+var c = module.exports = require('c.js')();
+var dev = c.env('development');
+var prod = c.env('production');
+var private = c.import(require('./private'));
+
+c('script', __dirname + '/scripts');
 
 dev({
   debug: 'app:*',
@@ -39,37 +34,55 @@ dev.client({
 prod.server('s3', 'some key');
 prod.client('ga', 'some key');
 
-module.exports = conf.export();
+conf.write(__dirname + '/client.js');
+```
+
+In `production` index.js:
+
+```
+  var conf = require('./config');
+  conf.script // __dirname + '/scripts'
+  conf.s3 // some key
+  conf.ga // undefined (server-side keys only, `ga` will be exposed in client.js)
 ```
 
 ## API
 
-### C(json)
+### C(key, value)
 
-Create a new configuration with initial `json`. `json` added to all environments on both the client and server.
+Create a new configuration with initial data. The arguments are added to all environments on both runtimes (client and server). Arguments passed to the `mutate` function (see below).
+
+### c(key, value)
+
+Add configuration to all environments and runtimes. Arguments passed to the `mutate` function. This function may be called any number of times.
+
+### c.all(key, value)
+
+Alias to `c(key, value)`.
+
+### c.server(key, value);
+
+Add configuration to the `server` runtime on all environments.  Arguments passed to the `mutate` function.
+
+### c.client(key, value);
+
+Add configuration to the `client` runtime on all environments.  Arguments passed to the `mutate` function.
 
 ### c.env(environment)
 
-Initialize an environment specific configuration. The environment is loaded based on `process.env.NODE_ENV` and defaults to `development`
-
-### c.all()
-
-Initialize the `all` environment, or configuration that is inherited by all environments. May also use specific `client` and `server` configuration
-
-```js
-var all = c.all();
-all({ ... });
-all.server({ ... });
-all.client({ ... });
-```
-
-### c.export()
-
-Used to finalize the configuration, exporting only the JSON relevant to the given environment. Also writes the client-side JSON for consumption by component.
+Initialize an environment specific configuration. The environment is loaded based on `process.env.NODE_ENV` and defaults to `development`.
 
 ### c.import(c)
 
-Import configuration from another file. Useful for private files and breaking up big configurations.
+Import configuration from another file. Useful for private files and breaking up big configurations. `c` may be either a `c` instance or `json`.
+
+### c.write(filepath)
+
+Write the client runtime to the filepath. Used to be required by the local `component.json` or `bower.json`. Should be placed at the end of the file. Also might want to add the `filepath` to your `.gitignore`.
+
+```js
+c.write(__dirname + '/client.js');
+```
 
 ### c.json()
 
@@ -77,7 +90,7 @@ Get the raw `json`
 
 ### Environment(key, value)
 
-Add a key value pair to an environment configuration on both client and server. `key` may also be an object to add many values at once. This function may be called any number of times. If no `value` is specified, the function is a getter.
+Add a key value pair to an environment configuration on both client and server. Arguments passed to the `mutate` function. This function may be called any number of times.
 
 ```js
 dev('log', true);
@@ -90,7 +103,7 @@ dev({
 
 ### environment.client(key, value)
 
-Add a configuration for the client-side under the given environment. `browser` is an alias to `client`.
+Add a configuration for the `client` runtime under the given environment.
 
 ```js
 dev.client({ ... })
@@ -98,7 +111,7 @@ dev.client({ ... })
 
 ### environment.server(key, value)
 
-Add a configuration for the server-side under the given environment.
+Add a configuration for the `server` runtime under the given environment.
 
 ```js
 dev.server({ ... })
@@ -107,6 +120,25 @@ dev.server({ ... })
 ### environment.json()
 
 Get the raw `json` for the environment
+
+### mutate(key, value)
+
+This mutate function is used internally by all environment and root configurations. You may set many values at once by passing an object to `key`, or set a single value by passing the `key` and `value`, or get a value by only specifying a `key`. For getters, the root configuration (all) inherits from the loaded environment.
+
+```js
+  mutate('a', 'b');
+  mutate({ a: b });
+  mutate('a');
+```
+
+Mutate is
+
+## Tests
+
+```
+npm install
+make test
+```
 
 ## License
 
