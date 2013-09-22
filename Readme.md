@@ -44,7 +44,16 @@ In `production` index.js:
   var conf = require('./config');
   conf.script // __dirname + '/scripts'
   conf.s3 // some key
-  conf.ga // undefined (server-side keys only, `ga` will be exposed in client.js)
+  conf.ga // undefined (client-side key)
+```
+
+In `production` client.js:
+
+```
+  var conf = require('./config');
+  conf.script // __dirname + '/scripts'
+  conf.s3 // undefined (server-side key)
+  conf.ga // some key
 ```
 
 ## API
